@@ -9,7 +9,11 @@
       </div>
     </div>
     <div class="h-full grow flex items-center justify-center">
-      <img src="https://openweathermap.org/img/wn/10d@2x.png" alt="" />
+      <img
+        src="https://openweathermap.org/img/wn/10d@2x.png"
+        alt=""
+        class="max-w-24 max-h-24"
+      />
     </div>
     <div class="grow m-auto">
       <p class="text-lg text-center h-full">Temperature</p>

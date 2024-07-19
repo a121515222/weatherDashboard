@@ -11,9 +11,15 @@ const props = defineProps({
 });
 </script>
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md text-center">
+  <div
+    class="bg-white p-4 rounded-lg shadow-md flex lg:flex-col justify-center items-center"
+  >
     <p>{{ props.forecastProp.date }}</p>
-    <p>{{ props.forecastProp.weather }}</p>
+    <img
+      src="https://openweathermap.org/img/wn/10d@2x.png"
+      alt=""
+      class="max-w-24 max-h-24"
+    />
     <p>{{ props.forecastProp.temperature }}</p>
   </div>
 </template>
