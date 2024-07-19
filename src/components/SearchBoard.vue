@@ -1,14 +1,54 @@
 <script setup>
 import AutoCompleteVue from "./AutoComplete.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
-const autoCompleteList = ref(["555", "666", "777"]);
+import { useThrottleFn } from "@vueuse/core";
+const autoCompleteList = ref([]);
 const searchCity = ref("");
+const searchParameter = ref({
+  latitude: 0,
+  longitude: 0,
+  timezone: ""
+});
 const handleCompleteListEmit = (list) => {
-  searchCity.value = list;
+  console.log("list", list);
+  const { country, latitude, longitude, timezone, name } = list;
+  searchCity.value = name;
+  searchParameter.value = {
+    country,
+    latitude,
+    longitude,
+    timezone
+  };
+  console.log("searchParameter", searchParameter.value);
   autoCompleteList.value = [];
 };
+const fetchLocation = useThrottleFn(async (city) => {
+  const res = await fetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
+  );
+  const data = await res.json();
+  autoCompleteList.value = data.results.map(
+    ({ country, latitude, longitude, timezone, name }) => {
+      return {
+        country,
+        latitude,
+        longitude,
+        timezone,
+        name
+      };
+    }
+  );
+}, 1500);
+watch(searchCity, async (city) => {
+  if (city.length === 0) {
+    autoCompleteList.value = [];
+  }
+  if (city.length >= 2) {
+    await fetchLocation(city);
+  }
+});
 </script>
 
 <template>
@@ -26,7 +66,6 @@ const handleCompleteListEmit = (list) => {
           @autoCompleteListEmit="handleCompleteListEmit"
         />
       </div>
-
       <button class="bg-blue-500 text-white p-2 rounded" @click="search">
         <svg
           xmlns="http://www.w3.org/2000/svg"

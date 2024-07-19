@@ -21,7 +21,7 @@ const emitList = (list) => {
       class="hover:bg-gray-100 text-color-800 p-2 cursor-pointer"
       @click="emitList(list)"
     >
-      {{ list }}
+      {{ list.name }} {{ list.country }}
     </li>
   </ul>
 </template>
