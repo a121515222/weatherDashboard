@@ -4,9 +4,13 @@ import { ref, watch } from "vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
 import { useThrottleFn } from "@vueuse/core";
-const { autoCompleteList, isShowAutoComplete } = storeToRefs(
-  useDashBoardStore()
-);
+import {
+  iconMapDay,
+  iconMapNight,
+  wmoCodeDescription
+} from "@/parameter/weatherCode";
+const { autoCompleteList, isShowAutoComplete, currentCityWeather, forecasts } =
+  storeToRefs(useDashBoardStore());
 const searchCity = ref("");
 const searchParameter = ref({
   latitude: 0,
@@ -45,31 +49,50 @@ const fetchLocation = useThrottleFn(async (city) => {
 const fetchWeather = useThrottleFn(async () => {
   let { latitude, longitude, timezone, unit } = searchParameter.value;
   if (latitude || longitude) {
-    console.log("autoCompleteList", autoCompleteList.value);
     searchParameter.value = autoCompleteList.value[0];
     ({ latitude, longitude, timezone, unit } = searchParameter.value);
   }
-  console.log("searchParameter", searchParameter.value);
   const res = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code,&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${timezone}${
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code,&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${timezone}${
       unit ? unit : ""
     }`
   );
   const data = await res.json();
   const { current, current_units, daily } = data;
-  console.log("data", data);
+  currentCityWeather.value = {
+    temperature: `${current.temperature_2m} ${current_units.temperature_2m}`,
+    windSpeed: `${current.wind_speed_10m} ${current_units.wind_speed_10m}`,
+    humidity: `${current.relative_humidity_2m} ${current_units.relative_humidity_2m}`,
+    date: current.time.split("T")[0],
+    time: current.time.split("T")[1],
+    weatherCode:
+      current.is_day === 1
+        ? iconMapDay[current.weather_code]
+        : iconMapNight[current.weather_code],
+    weatherDescription: wmoCodeDescription[current.weather_code]
+  };
+  forecasts.value = daily.time.map((date, index) => {
+    return {
+      date,
+      weatherCode: iconMapDay[daily.weather_code[index]],
+      weatherDescription: wmoCodeDescription[daily.weather_code[index]],
+      temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
+    };
+  });
+  console.log("currentCityWeather", currentCityWeather.value);
+  console.log("forecasts", forecasts.value);
 }, 1500);
 
 const handleFetchWeatherUnit = (unit) => {
   searchParameter.value.unit = unit;
 };
-watch(searchCity, async (newCity, oldCity) => {
-  if (newCity.length === 0) {
+watch(searchCity, async (city) => {
+  if (city.length === 0) {
     autoCompleteList.value = [];
     isShowAutoComplete.value = true;
   }
-  if (newCity.length >= 2 && isShowAutoComplete.value) {
-    await fetchLocation(newCity);
+  if (city.length >= 2 && isShowAutoComplete.value) {
+    await fetchLocation(city);
   }
 });
 </script>
