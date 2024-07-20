@@ -5,7 +5,7 @@ import ForecastWeatherDisplayVue from "@/components/dashBoard/ForecastWeatherDis
 import SearchBoardVue from "@/components/dashBoard/SearchBoard.vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
-const { forecasts } = storeToRefs(useDashBoardStore());
+const { forecasts, currentCityWeather } = storeToRefs(useDashBoardStore());
 const weather = ref(null);
 </script>
 
@@ -15,7 +15,7 @@ const weather = ref(null);
       <!-- Main Weather Info -->
       <div class="grid grid-cols-12 gap-4 mb-8">
         <div class="col-span-12 lg:col-span-8">
-          <MainWeatherDisplayVue></MainWeatherDisplayVue>
+          <MainWeatherDisplayVue :currentCityWeatherProp="currentCityWeather" />
         </div>
         <div class="col-span-12 lg:col-span-4">
           <SearchBoardVue />
@@ -25,8 +25,8 @@ const weather = ref(null);
       <!-- Weather Forecast -->
       <div class="flex flex-wrap gap-2 lg:gap-4">
         <div
-          v-for="forecast in forecasts"
-          :key="forecast.date"
+          v-for="(forecast, index) in forecasts"
+          :key="`${forecast?.date + index}`"
           class="w-full m-2 lg:w-auto lg:grow"
         >
           <ForecastWeatherDisplayVue :forecastProp="forecast" />

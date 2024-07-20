@@ -21,6 +21,7 @@ const searchParameter = ref({
 const handleCompleteListEmit = (list) => {
   const { country, latitude, longitude, timezone, name } = list;
   searchCity.value = name;
+  currentCityWeather.value.cityName = name;
   searchParameter.value = {
     country,
     latitude,
@@ -71,7 +72,7 @@ const fetchWeather = useThrottleFn(async () => {
         : iconMapNight[current.weather_code],
     weatherDescription: wmoCodeDescription[current.weather_code]
   };
-  forecasts.value = daily.time.map((date, index) => {
+  forecasts.value = daily.time.slice(0, 5).map((date, index) => {
     return {
       date,
       weatherCode: iconMapDay[daily.weather_code[index]],
@@ -79,8 +80,6 @@ const fetchWeather = useThrottleFn(async () => {
       temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
     };
   });
-  console.log("currentCityWeather", currentCityWeather.value);
-  console.log("forecasts", forecasts.value);
 }, 1500);
 
 const handleFetchWeatherUnit = (unit) => {
