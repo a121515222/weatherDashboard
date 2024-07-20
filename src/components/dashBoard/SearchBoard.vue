@@ -47,17 +47,17 @@ const fetchWeather = useThrottleFn(async () => {
   if (latitude || longitude) {
     console.log("autoCompleteList", autoCompleteList.value);
     searchParameter.value = autoCompleteList.value[0];
-    ({ latitude, longitude, timezone } = searchParameter.value);
+    ({ latitude, longitude, timezone, unit } = searchParameter.value);
   }
   console.log("searchParameter", searchParameter.value);
   const res = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code&timezone=${timezone}${
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code,&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${timezone}${
       unit ? unit : ""
     }`
   );
   const data = await res.json();
+  const { current, current_units, daily } = data;
   console.log("data", data);
-  weather.value = data;
 }, 1500);
 
 const handleFetchWeatherUnit = (unit) => {
