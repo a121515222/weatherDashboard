@@ -60,6 +60,7 @@ const fetchWeather = useThrottleFn(async () => {
   );
   const data = await res.json();
   const { current, current_units, daily } = data;
+  const cityName = currentCityWeather.value.cityName;
   currentCityWeather.value = {
     temperature: `${current.temperature_2m} ${current_units.temperature_2m}`,
     windSpeed: `${current.wind_speed_10m} ${current_units.wind_speed_10m}`,
@@ -70,7 +71,8 @@ const fetchWeather = useThrottleFn(async () => {
       current.is_day === 1
         ? iconMapDay[current.weather_code]
         : iconMapNight[current.weather_code],
-    weatherDescription: wmoCodeDescription[current.weather_code]
+    weatherDescription: wmoCodeDescription[current.weather_code],
+    cityName
   };
   forecasts.value = daily.time.slice(0, 5).map((date, index) => {
     return {
