@@ -1,8 +1,12 @@
 <script setup>
 const props = defineProps({
-  autoCompleteList: {
+  autoCompleteListProp: {
     type: Array,
     default: () => []
+  },
+  isShowAutoCompleteProp: {
+    type: Boolean,
+    default: true
   }
 });
 const emit = defineEmits(["autoCompleteListEmit"]);
@@ -13,11 +17,13 @@ const emitList = (list) => {
 
 <template>
   <ul
-    v-show="props.autoCompleteList.length > 0"
+    v-show="
+      props.autoCompleteListProp.length > 0 && props.isShowAutoCompleteProp
+    "
     class="absolute bg-white Relative w-full border border-gray-300 rounded-md shadow-md z-0"
   >
     <li
-      v-for="list in props.autoCompleteList"
+      v-for="list in props.autoCompleteListProp"
       class="hover:bg-gray-100 text-color-800 p-2 cursor-pointer"
       @click="emitList(list)"
     >

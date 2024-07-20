@@ -4,15 +4,17 @@ import { ref, watch } from "vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
 import { useThrottleFn } from "@vueuse/core";
-const autoCompleteList = ref([]);
+const { autoCompleteList, isShowAutoComplete } = storeToRefs(
+  useDashBoardStore()
+);
 const searchCity = ref("");
 const searchParameter = ref({
   latitude: 0,
   longitude: 0,
-  timezone: ""
+  timezone: "",
+  unit: ""
 });
 const handleCompleteListEmit = (list) => {
-  console.log("list", list);
   const { country, latitude, longitude, timezone, name } = list;
   searchCity.value = name;
   searchParameter.value = {
@@ -21,8 +23,7 @@ const handleCompleteListEmit = (list) => {
     longitude,
     timezone
   };
-  console.log("searchParameter", searchParameter.value);
-  autoCompleteList.value = [];
+  isShowAutoComplete.value = false;
 };
 const fetchLocation = useThrottleFn(async (city) => {
   const res = await fetch(
@@ -41,12 +42,34 @@ const fetchLocation = useThrottleFn(async (city) => {
     }
   );
 }, 1500);
-watch(searchCity, async (city) => {
-  if (city.length === 0) {
-    autoCompleteList.value = [];
+const fetchWeather = useThrottleFn(async () => {
+  let { latitude, longitude, timezone, unit } = searchParameter.value;
+  if (latitude || longitude) {
+    console.log("autoCompleteList", autoCompleteList.value);
+    searchParameter.value = autoCompleteList.value[0];
+    ({ latitude, longitude, timezone } = searchParameter.value);
   }
-  if (city.length >= 2) {
-    await fetchLocation(city);
+  console.log("searchParameter", searchParameter.value);
+  const res = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code&timezone=${timezone}${
+      unit ? unit : ""
+    }`
+  );
+  const data = await res.json();
+  console.log("data", data);
+  weather.value = data;
+}, 1500);
+
+const handleFetchWeatherUnit = (unit) => {
+  searchParameter.value.unit = unit;
+};
+watch(searchCity, async (newCity, oldCity) => {
+  if (newCity.length === 0) {
+    autoCompleteList.value = [];
+    isShowAutoComplete.value = true;
+  }
+  if (newCity.length >= 2 && isShowAutoComplete.value) {
+    await fetchLocation(newCity);
   }
 });
 </script>
@@ -60,13 +83,15 @@ watch(searchCity, async (city) => {
           placeholder="Search city"
           class="border p-2 w-full mr-2 rounded"
           v-model="searchCity"
+          @focus="isShowAutoComplete = true"
         />
         <AutoCompleteVue
-          :autoCompleteList="autoCompleteList"
+          :autoCompleteListProp="autoCompleteList"
+          :isShowAutoCompleteProp="isShowAutoComplete"
           @autoCompleteListEmit="handleCompleteListEmit"
         />
       </div>
-      <button class="bg-blue-500 text-white p-2 rounded" @click="search">
+      <button class="bg-blue-500 text-white p-2 rounded" @click="fetchWeather">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6"
@@ -86,13 +111,19 @@ watch(searchCity, async (city) => {
     <div class="flex justify-between">
       <button
         class="border p-2 w-1/2 mr-1 rounded bg-orange-400"
-        @click="setUnit('F')"
+        @click="
+          handleFetchWeatherUnit('&&temperature_unit=fahrenheit');
+          fetchWeather();
+        "
       >
         F°
       </button>
       <button
         class="border p-2 w-1/2 ml-1 rounded bg-lime-400"
-        @click="setUnit('C')"
+        @click="
+          handleFetchWeatherUnit('&&temperature_unit=fahrenheit');
+          fetchWeather();
+        "
       >
         C°
       </button>

@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from "vue";
-import MainWeatherDisplayVue from "./MainWeatherDisplay.vue";
-import ForecastWeatherDisplayVue from "./ForecastWeatherDisplay.vue";
-import SearchBoardVue from "./SearchBoard.vue";
+import MainWeatherDisplayVue from "@/components/dashBoard/MainWeatherDisplay.vue";
+import ForecastWeatherDisplayVue from "@/components/dashBoard/ForecastWeatherDisplay.vue";
+import SearchBoardVue from "@/components/dashBoard/SearchBoard.vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
 const { forecasts } = storeToRefs(useDashBoardStore());
@@ -23,7 +23,7 @@ const weather = ref(null);
       </div>
 
       <!-- Weather Forecast -->
-      <div class="flex flex-wrap gap-4">
+      <div class="flex flex-wrap gap-2 lg:gap-4">
         <div
           v-for="forecast in forecasts"
           :key="forecast.date"
@@ -36,8 +36,4 @@ const weather = ref(null);
   </div>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
+<style scoped></style>
