@@ -1,5 +1,6 @@
 <script setup>
 import AutoCompleteVue from "./AutoComplete.vue";
+import Alert from "@/components/model/Alert.vue";
 import { ref, watch } from "vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
@@ -9,7 +10,10 @@ import {
   iconMapNight,
   wmoCodeDescription
 } from "@/parameter/weatherCode";
-import Alert from "@/components/model/Alert.vue";
+import {
+  isValidEnglishLettersOnly,
+  englishLettersOnlyPattern
+} from "@/utils/validator";
 const { autoCompleteList, isShowAutoComplete, currentCityWeather, forecasts } =
   storeToRefs(useDashBoardStore());
 const searchCity = ref("");
@@ -33,26 +37,28 @@ const handleCompleteListEmit = async (list) => {
   await fetchWeather();
 };
 const fetchLocation = useThrottleFn(async (city) => {
-  const res = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
-  );
-  const data = await res.json();
-  if (!data?.results) {
-    toggleAlert(`${searchCity.value} City not found`);
-    searchCity.value = "";
-    return;
-  }
-  autoCompleteList.value = data.results.map(
-    ({ country, latitude, longitude, timezone, name }) => {
-      return {
-        country,
-        latitude,
-        longitude,
-        timezone,
-        name
-      };
+  if (validateInput(city, "Please enter English letters only")) {
+    const res = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
+    );
+    const data = await res.json();
+    if (!data?.results) {
+      toggleAlert(`${searchCity.value} City not found`);
+      searchCity.value = "";
+      return;
     }
-  );
+    autoCompleteList.value = data.results.map(
+      ({ country, latitude, longitude, timezone, name }) => {
+        return {
+          country,
+          latitude,
+          longitude,
+          timezone,
+          name
+        };
+      }
+    );
+  }
 }, 1500);
 const fetchWeather = useThrottleFn(async () => {
   // if (searchCity.value.length <= 1) {
@@ -109,8 +115,32 @@ const toggleAlert = (message) => {
   alertMessage.value = message;
   alertRef.value.alertToggle();
 };
+
+const searchInputRef = ref(null);
+const inputErrorMessageRef = ref(null);
+const inputErrorMessage = ref("-");
+
+const validateInput = (data, errorMessage) => {
+  if (!isValidEnglishLettersOnly(data)) {
+    inputErrorMessage.value = `${errorMessage}`;
+    addValidationStyle();
+    return false;
+  }
+  resetValidationStyle();
+  return true;
+};
+const addValidationStyle = () => {
+  inputErrorMessageRef.value.classList.remove("opacity-0");
+};
+const resetValidationStyle = () => {
+  inputErrorMessageRef.value.classList.add("opacity-0");
+};
 watch(searchCity, async (city) => {
-  if (city.length <= 1) {
+  if (!city) {
+    resetValidationStyle();
+  }
+  if (city.length <= 1 && city !== "") {
+    validateInput(city, "Please enter English letters only");
     autoCompleteList.value = [];
     isShowAutoComplete.value = true;
   }
@@ -125,12 +155,20 @@ watch(searchCity, async (city) => {
     <div class="flex items-center mb-4 gap-4">
       <div class="flex-grow relative">
         <input
+          ref="searchInputRef"
           type="text"
           placeholder="please enter city name"
-          class="border p-2 w-full mr-2 rounded"
+          :pattern="englishLettersOnlyPattern"
+          class="border block p-2 w-full mr-2 rounded invalid:border-red-500 invalid:bg-red-50 focus:invalid:ring-red-500"
           v-model.trim="searchCity"
           @focus="isShowAutoComplete = true"
         />
+        <p
+          ref="inputErrorMessageRef"
+          class="mt-2 pl-2 text-sm text-red-600 dark:text-red-500 opacity-0"
+        >
+          {{ inputErrorMessage }}
+        </p>
         <AutoCompleteVue
           :autoCompleteListProp="autoCompleteList"
           :isShowAutoCompleteProp="isShowAutoComplete"
