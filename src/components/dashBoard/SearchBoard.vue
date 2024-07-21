@@ -82,7 +82,7 @@ const fetchWeather = useThrottleFn(async () => {
       temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
     };
   });
-}, 1500);
+}, 800);
 
 const handleFetchWeatherUnit = (unit) => {
   searchParameter.value.unit = unit;
@@ -145,7 +145,7 @@ watch(searchCity, async (city) => {
       <button
         class="border p-2 w-1/2 ml-1 rounded bg-lime-400"
         @click="
-          handleFetchWeatherUnit('&&temperature_unit=fahrenheit');
+          handleFetchWeatherUnit();
           fetchWeather();
         "
       >

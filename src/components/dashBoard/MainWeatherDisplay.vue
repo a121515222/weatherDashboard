@@ -52,7 +52,7 @@ import imgSvg from "@/assets/img.svg";
           class="max-w-24 max-h-24"
           @error="handleImageError"
         />
-        <img v-else :src="imgSvg" alt="icon" class="max-w-12 max-h-12" />
+        <img v-else :src="imgSvg" alt="icon" class="max-w-12 max-h-12 mt-4" />
         <p class="text-l text-center text-wrap max-w-28">
           {{
             props.currentCityWeatherProp?.weatherDescription
