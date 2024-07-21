@@ -9,6 +9,7 @@ import {
   iconMapNight,
   wmoCodeDescription
 } from "@/parameter/weatherCode";
+import Alert from "@/components/model/Alert.vue";
 const { autoCompleteList, isShowAutoComplete, currentCityWeather, forecasts } =
   storeToRefs(useDashBoardStore());
 const searchCity = ref("");
@@ -87,6 +88,12 @@ const fetchWeather = useThrottleFn(async () => {
 const handleFetchWeatherUnit = (unit) => {
   searchParameter.value.unit = unit;
 };
+
+const alertRef = ref(null);
+
+const toggleAlert = () => {
+  alertRef.value.alertToggle();
+};
 watch(searchCity, async (city) => {
   if (city.length === 0) {
     autoCompleteList.value = [];
@@ -153,4 +160,5 @@ watch(searchCity, async (city) => {
       </button>
     </div>
   </div>
+  <Alert ref="alertRef" />
 </template>

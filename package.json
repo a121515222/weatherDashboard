@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.11.0",
+    "flowbite": "^2.4.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.31"
   },
