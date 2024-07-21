@@ -19,7 +19,7 @@ const searchParameter = ref({
   timezone: "",
   unit: ""
 });
-const handleCompleteListEmit = (list) => {
+const handleCompleteListEmit = async (list) => {
   const { country, latitude, longitude, timezone, name } = list;
   searchCity.value = name;
   currentCityWeather.value.cityName = name;
@@ -30,12 +30,18 @@ const handleCompleteListEmit = (list) => {
     timezone
   };
   isShowAutoComplete.value = false;
+  await fetchWeather();
 };
 const fetchLocation = useThrottleFn(async (city) => {
   const res = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
   );
   const data = await res.json();
+  if (!data?.results) {
+    toggleAlert(`${searchCity.value} City not found`);
+    searchCity.value = "";
+    return;
+  }
   autoCompleteList.value = data.results.map(
     ({ country, latitude, longitude, timezone, name }) => {
       return {
@@ -49,6 +55,10 @@ const fetchLocation = useThrottleFn(async (city) => {
   );
 }, 1500);
 const fetchWeather = useThrottleFn(async () => {
+  // if (searchCity.value.length <= 1) {
+  //   toggleAlert("Please enter at least two letters");
+  //   return;
+  // }
   let { latitude, longitude, timezone, unit } = searchParameter.value;
   if (latitude || longitude) {
     searchParameter.value = autoCompleteList.value[0];
@@ -60,6 +70,10 @@ const fetchWeather = useThrottleFn(async () => {
     }`
   );
   const data = await res.json();
+  if (data.error) {
+    toggleAlert("City not found");
+    return;
+  }
   const { current, current_units, daily } = data;
   const cityName = currentCityWeather.value.cityName;
   currentCityWeather.value = {
@@ -90,12 +104,13 @@ const handleFetchWeatherUnit = (unit) => {
 };
 
 const alertRef = ref(null);
-
-const toggleAlert = () => {
+const alertMessage = ref("");
+const toggleAlert = (message) => {
+  alertMessage.value = message;
   alertRef.value.alertToggle();
 };
 watch(searchCity, async (city) => {
-  if (city.length === 0) {
+  if (city.length <= 1) {
     autoCompleteList.value = [];
     isShowAutoComplete.value = true;
   }
@@ -111,9 +126,9 @@ watch(searchCity, async (city) => {
       <div class="flex-grow relative">
         <input
           type="text"
-          placeholder="Search city"
+          placeholder="please enter city name"
           class="border p-2 w-full mr-2 rounded"
-          v-model="searchCity"
+          v-model.trim="searchCity"
           @focus="isShowAutoComplete = true"
         />
         <AutoCompleteVue
@@ -122,7 +137,7 @@ watch(searchCity, async (city) => {
           @autoCompleteListEmit="handleCompleteListEmit"
         />
       </div>
-      <button class="bg-blue-500 text-white p-2 rounded" @click="fetchWeather">
+      <!-- <button class="bg-blue-500 text-white p-2 rounded" @click="fetchWeather">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6"
@@ -137,7 +152,7 @@ watch(searchCity, async (city) => {
             d="M21 21l-4.35-4.35m2.35-4.65a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-      </button>
+      </button> -->
     </div>
     <div class="flex justify-between">
       <button
@@ -160,5 +175,5 @@ watch(searchCity, async (city) => {
       </button>
     </div>
   </div>
-  <Alert ref="alertRef" />
+  <Alert ref="alertRef" :alertMessage="alertMessage" />
 </template>

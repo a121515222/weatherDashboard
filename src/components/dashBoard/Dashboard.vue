@@ -1,12 +1,10 @@
 <script setup>
-import { ref } from "vue";
 import MainWeatherDisplayVue from "@/components/dashBoard/MainWeatherDisplay.vue";
 import ForecastWeatherDisplayVue from "@/components/dashBoard/ForecastWeatherDisplay.vue";
 import SearchBoardVue from "@/components/dashBoard/SearchBoard.vue";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
 const { forecasts, currentCityWeather } = storeToRefs(useDashBoardStore());
-const weather = ref(null);
 </script>
 
 <template>
