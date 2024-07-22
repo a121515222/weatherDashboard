@@ -113,17 +113,23 @@ describe("useSearchBoard", () => {
   });
 
   it("handles fetch location error", async () => {
-    const { fetchLocation, autoCompleteList, searchCity, toggleAlert } =
-      useSearchBoard();
+    const {
+      fetchLocation,
+      autoCompleteList,
+      searchCity,
+      alertMessage,
+      toggleAlert
+    } = useSearchBoard();
     searchCity.value = "InvalidCity";
     global.fetch.mockResolvedValueOnce({
       json: vi.fn().mockResolvedValue({ results: null })
     });
 
-    const alertSpy = vi.spyOn(useSearchBoard(), "toggleAlert");
+    // const alertSpy = vi.spyOn(useSearchBoard(), "toggleAlert");
     await fetchLocation("InvalidCity");
     expect(autoCompleteList.value).toEqual([]);
-    expect(alertSpy).toHaveBeenCalledWith("InvalidCity City not found");
+    // expect(alertSpy).toHaveBeenCalledWith("InvalidCity City not found");
+    expect(alertMessage.value).toEqual("InvalidCity City not found");
   });
 
   it("fetches weather data", async () => {
