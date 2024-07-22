@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useThrottleFn } from "@vueuse/core";
 import { useDashBoardStore } from "@/stores/dashBoardStore";
 import { storeToRefs } from "pinia";
@@ -9,7 +9,7 @@ import {
 } from "@/parameter/weatherCode";
 import { isValidEnglishLettersOnly } from "@/utils/validator";
 
-export function useSearchBoard() {
+export function useSearchBoard(customRefs = {}) {
   const {
     autoCompleteList,
     isShowAutoComplete,
@@ -99,21 +99,23 @@ export function useSearchBoard() {
       weatherDescription: wmoCodeDescription[daily.weather_code[index]],
       temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
     }));
+    console.log("currentCityWeather", currentCityWeather.value);
+    console.log("forecasts", forecasts.value);
   }, 800);
 
   const handleFetchWeatherUnit = (unit) => {
     searchParameter.value.unit = unit;
   };
 
-  const alertRef = ref(null);
+  const alertRef = customRefs.alertRef || ref(null);
   const alertMessage = ref("");
   const toggleAlert = (message) => {
     alertMessage.value = message;
-    alertRef.value.alertToggle();
+    alertRef.value?.alertToggle();
   };
 
-  const searchInputRef = ref(null);
-  const inputErrorMessageRef = ref(null);
+  const searchInputRef = customRefs.searchInputRef || ref(null);
+  const inputErrorMessageRef = customRefs.inputErrorMessageRef || ref(null);
   const inputErrorMessage = ref("-");
 
   const validateInput = (data, errorMessage) => {
@@ -127,12 +129,15 @@ export function useSearchBoard() {
   };
 
   const addValidationStyle = () => {
-    inputErrorMessageRef.value.classList.remove("opacity-0");
+    inputErrorMessageRef.value &&
+      inputErrorMessageRef.value.classList.remove("opacity-0");
   };
 
   const resetValidationStyle = () => {
-    inputErrorMessageRef.value.classList.add("opacity-0");
+    inputErrorMessageRef.value &&
+      inputErrorMessageRef.value.classList.add("opacity-0");
   };
+
   return {
     searchCity,
     searchParameter,
@@ -150,6 +155,8 @@ export function useSearchBoard() {
     addValidationStyle,
     resetValidationStyle,
     isShowAutoComplete,
-    autoCompleteList
+    autoCompleteList,
+    currentCityWeather,
+    forecasts
   };
 }
