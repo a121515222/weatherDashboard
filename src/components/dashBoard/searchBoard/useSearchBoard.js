@@ -99,8 +99,6 @@ export function useSearchBoard(customRefs = {}) {
       weatherDescription: wmoCodeDescription[daily.weather_code[index]],
       temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
     }));
-    console.log("currentCityWeather", currentCityWeather.value);
-    console.log("forecasts", forecasts.value);
   }, 800);
 
   const handleFetchWeatherUnit = (unit) => {

@@ -1,14 +1,3 @@
-// import { test, describe, expect } from "vitest";
-// import { useSearchBoard } from "./useSearchBoard";
-// import { setActivePinia, createPinia } from "pinia";
-
-// describe("searchBoard", () => {
-//   test("1 + 1 = 2", () => {
-//     setActivePinia(createPinia());
-//     const { searchCity } = useSearchBoard();
-//     expect(1 + 1).toBe(2);
-//   });
-// });
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useSearchBoard } from "./useSearchBoard";
