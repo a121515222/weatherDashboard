@@ -1,5 +1,6 @@
 export function isValidEnglishLettersOnly(input) {
-  const regex = /^[a-zA-Z]+$/;
+  const regex = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žƀ-ɏ]+(\s[A-Za-zÀ-ÖØ-öø-ÿĀ-žƀ-ɏ]+)*\s*$/;
   return regex.test(input);
 }
-export const englishLettersOnlyPattern = "^[a-zA-Z]+$";
+export const englishLettersOnlyPattern =
+  "^[A-Za-zÀ-ÖØ-öø-ÿĀ-žƀ-ɏ]+(\\s[A-Za-zÀ-ÖØ-öø-ÿĀ-žƀ-ɏ]+)*\\s*$";

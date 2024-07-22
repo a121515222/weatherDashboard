@@ -23,6 +23,7 @@ const {
 watch(searchCity, async (city) => {
   if (!city) {
     resetValidationStyle();
+    autoCompleteList.value = [];
   }
   if (city.length <= 1 && city !== "") {
     validateInput(city, "Please enter English letters only");
@@ -48,19 +49,21 @@ watch(searchCity, async (city) => {
           v-model.trim="searchCity"
           @focus="isShowAutoComplete = true"
         />
-        <p
-          ref="inputErrorMessageRef"
-          class="mt-2 pl-2 text-sm text-red-600 dark:text-red-500 opacity-0"
-        >
-          {{ inputErrorMessage }}
-        </p>
         <AutoCompleteVue
           :autoCompleteListProp="autoCompleteList"
           :isShowAutoCompleteProp="isShowAutoComplete"
           @autoCompleteListEmit="handleCompleteListEmit"
         />
+        <p
+          ref="inputErrorMessageRef"
+          class="mt-2 pl-2 text-sm text-red-600 dark:text-red-500 opacity-0 z-0"
+        >
+          {{ inputErrorMessage }}
+        </p>
       </div>
-      <!-- <button class="bg-blue-500 text-white p-2 rounded" @click="fetchWeather">
+      <!-- 
+      測試用按鈕
+      <button class="bg-blue-500 text-white p-2 rounded" @click="fetchWeather">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6"

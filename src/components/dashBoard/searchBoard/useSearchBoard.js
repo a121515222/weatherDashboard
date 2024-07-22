@@ -44,23 +44,25 @@ export function useSearchBoard(customRefs = {}) {
       const res = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
       );
-      const data = await res.json();
-      if (!data?.results) {
-        toggleAlert(`${searchCity.value} City not found`);
-        searchCity.value = "";
-        return;
-      }
-      autoCompleteList.value = data.results.map(
-        ({ country, latitude, longitude, timezone, name }) => ({
-          country,
-          latitude,
-          longitude,
-          timezone,
-          name
-        })
-      );
+      try {
+        const data = await res.json();
+        if (!data?.results) {
+          toggleAlert(`${searchCity.value} City not found`);
+          searchCity.value = "";
+          return;
+        }
+        autoCompleteList.value = data.results.map(
+          ({ country, latitude, longitude, timezone, name }) => ({
+            country,
+            latitude,
+            longitude,
+            timezone,
+            name
+          })
+        );
+      } catch (error) {}
     }
-  }, 1500);
+  }, 1000);
 
   const fetchWeather = useThrottleFn(async () => {
     let { latitude, longitude, timezone, unit } = searchParameter.value;
@@ -68,37 +70,49 @@ export function useSearchBoard(customRefs = {}) {
       searchParameter.value = autoCompleteList.value[0];
       ({ latitude, longitude, timezone, unit } = searchParameter.value);
     }
-    const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code,&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${timezone}${
-        unit ? unit : ""
-      }`
-    );
-    const data = await res.json();
-    if (data.error) {
-      toggleAlert("City not found");
-      return;
+    try {
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=&daily=weather_code,&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${timezone}${
+          unit ? unit : ""
+        }`
+      );
+
+      if (!res) {
+        toggleAlert("Network error please try later");
+      }
+
+      const data = await res.json();
+
+      if (data.error) {
+        toggleAlert("City not found");
+        return;
+      }
+
+      const { current, current_units, daily } = data;
+      const cityName = currentCityWeather.value.cityName;
+      currentCityWeather.value = {
+        temperature: `${current.temperature_2m} ${current_units.temperature_2m}`,
+        windSpeed: `${current.wind_speed_10m} ${current_units.wind_speed_10m}`,
+        humidity: `${current.relative_humidity_2m} ${current_units.relative_humidity_2m}`,
+        date: current.time.split("T")[0],
+        time: current.time.split("T")[1],
+        weatherCode:
+          current.is_day === 1
+            ? iconMapDay[current.weather_code]
+            : iconMapNight[current.weather_code],
+        weatherDescription: wmoCodeDescription[current.weather_code],
+        cityName
+      };
+
+      forecasts.value = daily.time.slice(0, 5).map((date, index) => ({
+        date,
+        weatherCode: iconMapDay[daily.weather_code[index]],
+        weatherDescription: wmoCodeDescription[daily.weather_code[index]],
+        temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
+      }));
+    } catch (error) {
+      toggleAlert("Network error please try later");
     }
-    const { current, current_units, daily } = data;
-    const cityName = currentCityWeather.value.cityName;
-    currentCityWeather.value = {
-      temperature: `${current.temperature_2m} ${current_units.temperature_2m}`,
-      windSpeed: `${current.wind_speed_10m} ${current_units.wind_speed_10m}`,
-      humidity: `${current.relative_humidity_2m} ${current_units.relative_humidity_2m}`,
-      date: current.time.split("T")[0],
-      time: current.time.split("T")[1],
-      weatherCode:
-        current.is_day === 1
-          ? iconMapDay[current.weather_code]
-          : iconMapNight[current.weather_code],
-      weatherDescription: wmoCodeDescription[current.weather_code],
-      cityName
-    };
-    forecasts.value = daily.time.slice(0, 5).map((date, index) => ({
-      date,
-      weatherCode: iconMapDay[daily.weather_code[index]],
-      weatherDescription: wmoCodeDescription[daily.weather_code[index]],
-      temperature: `${daily.temperature_2m_max[index]} ${current_units.temperature_2m} - ${daily.temperature_2m_min[index]} ${current_units.temperature_2m}`
-    }));
   }, 800);
 
   const handleFetchWeatherUnit = (unit) => {

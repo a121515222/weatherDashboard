@@ -20,7 +20,7 @@ const emitList = (list) => {
     v-show="
       props.autoCompleteListProp.length > 0 && props.isShowAutoCompleteProp
     "
-    class="absolute bg-white Relative w-full border border-gray-300 rounded-md shadow-md z-0"
+    class="absolute bg-white Relative w-full border border-gray-300 rounded-md shadow-md z-10"
   >
     <li
       v-for="list in props.autoCompleteListProp"
