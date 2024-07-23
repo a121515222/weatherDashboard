@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from "vue";
+import { weatherCodeColorsClass } from "@/parameter/weatherCodeColorClass";
 import imgSvg from "@/assets/img.svg";
 const props = defineProps({
   forecastProp: {
@@ -6,10 +8,17 @@ const props = defineProps({
     default: {}
   }
 });
+const backgroundClass = computed(() => {
+  const weatherCode = props.forecastProp?.weatherCode;
+  return weatherCodeColorsClass[weatherCode]
+    ? `${weatherCodeColorsClass[weatherCode]} text-white`
+    : "bg-white text-black"; // default color
+});
 </script>
 <template>
   <div
-    class="bg-white p-4 rounded-lg shadow-md flex lg:flex-col justify-between lg:justify-center items-center h-full"
+    :class="backgroundClass"
+    class="p-4 rounded-lg shadow-md flex lg:flex-col justify-between lg:justify-center items-center h-full"
   >
     <p>{{ props.forecastProp.date ? props.forecastProp.date : "Date" }}</p>
     <div class="flex flex-col justify-center items-center">
