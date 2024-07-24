@@ -1,19 +1,25 @@
 # Weather Dashboard
 
-![專案封面圖](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-1.png?alt=media&token=04c9609b-7f0e-4d45-83f7-bd66029f4cba)
+![專案封面圖](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-5.png?alt=media&token=cb7f17c0-0dc3-48a9-9715-37267a915c29)
 
-- [專案位置] 尚未部屬
+- [專案位置] (http://weatherboard.chun-chia.name/)
 - [GitHub ](https://github.com/a121515222/weatherDashboard)
 
-## 功能
+## Weather Dashboard
+
+這是一個天氣預報顯示板，主要使用 Vue 與 tailWind CSS 製作。
+主要的功能有以下
 
 ### 搜尋輸入城市的天氣
 
-![搜尋結果](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-1.png?alt=media&token=04c9609b-7f0e-4d45-83f7-bd66029f4cba)
+主版會顯示氣溫、天氣、風速、濕度、城市名稱，並且背景顏色會根據天氣變化。
+![搜尋結果](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-5.png?alt=media&token=cb7f17c0-0dc3-48a9-9715-37267a915c29)
 
 ### AutoComplete 功能可以選擇城市
 
-![AutoComplete](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-2.png?alt=media&token=07f4d967-2eaf-4693-ac14-23e872c83dae)
+在輸入部分的城市名稱之後，會出現可選的城市
+
+![AutoComplete](https://firebasestorage.googleapis.com/v0/b/imagestorge-b6395.appspot.com/o/WeatherDashboard%2FweatherDashboard-6.png?alt=media&token=f39ccd73-c166-4cfc-89f7-f0a9999d91f1)
 
 ### 找不到城市通知
 

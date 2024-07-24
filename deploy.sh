@@ -1,25 +1,18 @@
-#!/usr/bin/env sh
-
-# 当发生错误时中止脚本
-set -e
-
-# 构建
 pnpm run build
 
-# cd 到构建输出的目录下
+# 2. 进入构建输出目录
 cd dist
 
-# 部署到自定义域域名
-# echo 'www.example.com' > CNAME
+# 3. 创建 CNAME 文件
+echo 'weatherboard.chun-chia.name' > CNAME
 
+# 4. 初始化 git 并提交
 git init
 git add -A
-git commit -m 'deploy'
+git commit -m "deploy"
 
-# 部署到 https://<USERNAME>.github.io
-# git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
+# 5. 返回项目根目录
+cd ..
 
-# 部署到 https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:a121515222/weatherDashboard.git master:gh-pages
-
-cd -
+# 6. 推送到 gh-pages 分支
+git subtree push --prefix dist origin gh-pages
