@@ -7,7 +7,7 @@
 
 ## Weather Dashboard
 
-這是一個天氣預報顯示板，主要使用 Vue 與 tailWind CSS 製作。
+這是一個天氣預報顯示板，主要使用 Vue 與 tailwind CSS 製作。
 主要的功能有以下
 
 ### 搜尋輸入城市的天氣
