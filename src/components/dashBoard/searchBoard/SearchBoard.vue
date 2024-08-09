@@ -45,7 +45,7 @@ watch(searchCity, async (city) => {
           type="text"
           placeholder="please enter city name"
           :pattern="englishLettersOnlyPattern"
-          class="border block p-2 w-full mr-2 rounded invalid:border-red-500 invalid:bg-red-50 focus:invalid:ring-red-500"
+          class="border block p-2 w-full mr-2 rounded invalid:border-red-500 invalid:bg-red-50 focus:invalid:ring-red-500 text-sm lg:text-base"
           v-model.trim="searchCity"
           @focus="isShowAutoComplete = true"
         />
@@ -56,7 +56,7 @@ watch(searchCity, async (city) => {
         />
         <p
           ref="inputErrorMessageRef"
-          class="mt-2 pl-2 text-sm text-red-600 dark:text-red-500 opacity-0 z-0"
+          class="mt-2 pl-2 text-xs lg:text-sm text-red-600 dark:text-red-500 opacity-0 z-0"
         >
           {{ inputErrorMessage }}
         </p>
@@ -82,7 +82,7 @@ watch(searchCity, async (city) => {
     </div>
     <div class="flex justify-between">
       <button
-        class="border p-2 w-1/2 mr-1 rounded bg-orange-400"
+        class="border p-2 w-1/2 mr-1 rounded bg-orange-400 text-sm lg:text-base"
         @click="
           handleFetchWeatherUnit('&&temperature_unit=fahrenheit');
           fetchWeather();
@@ -91,7 +91,7 @@ watch(searchCity, async (city) => {
         F°
       </button>
       <button
-        class="border p-2 w-1/2 ml-1 rounded bg-lime-400"
+        class="border p-2 w-1/2 ml-1 rounded bg-lime-400 text-sm lg:text-base"
         @click="
           handleFetchWeatherUnit();
           fetchWeather();

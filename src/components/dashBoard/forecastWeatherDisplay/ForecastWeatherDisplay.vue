@@ -20,21 +20,23 @@ const backgroundClass = computed(() => {
     :class="backgroundClass"
     class="p-4 rounded-lg shadow-md flex lg:flex-col justify-between lg:justify-center items-center h-full"
   >
-    <p>{{ props.forecastProp.date ? props.forecastProp.date : "Date" }}</p>
+    <p class="text-sm lg:text-xl text-nowrap">
+      {{ props.forecastProp.date ? props.forecastProp.date : "Date" }}
+    </p>
     <div class="flex flex-col justify-center items-center">
       <img
         v-if="props.forecastProp?.weatherCode"
         :src="`https://openweathermap.org/img/wn/${props.forecastProp?.weatherCode}@2x.png`"
         :alt="`${props.forecastProp.weatherDescription}icon`"
-        class="max-w-24 max-h-24"
+        class="max-w-14 max-h-14 lg:max-w-24 lg:max-h-24"
       />
       <img v-else :src="imgSvg" alt="icon" class="max-w-12 max-h-12" />
-      <p class="text-center text-wrap max-w-36">
+      <p class="text-center text-wrap max-w-36 text-sm lg:text-xl">
         {{ props.forecastProp.weatherDescription }}
       </p>
     </div>
 
-    <p class="text-lg mt-2">
+    <p class="text-sm lg:text-lg text-nowrap mt-2">
       {{
         props.forecastProp.temperature
           ? props.forecastProp.temperature

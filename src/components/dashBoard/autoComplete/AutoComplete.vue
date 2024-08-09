@@ -25,7 +25,7 @@ const emitList = (list) => {
     <li
       v-for="(list, index) in props.autoCompleteListProp"
       :key="index + list.name"
-      class="hover:bg-gray-100 text-color-800 p-2 cursor-pointer"
+      class="hover:bg-gray-100 text-color-800 p-2 cursor-pointer text-sm lg:text-base"
       @click="emitList(list)"
     >
       {{ list.name }} {{ list.country }}
